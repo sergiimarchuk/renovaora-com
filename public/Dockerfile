@@ -1,0 +1,42 @@
+# --- Build stage ---
+FROM golang:1.22-alpine AS builder
+
+WORKDIR /build
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+# Static binary, no CGO, stripped symbols
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /public-app .
+
+# Build the migrate CLI (used at container startup to apply schema migrations)
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" \
+    -tags 'postgres' \
+    -o /migrate \
+    github.com/golang-migrate/migrate/v4/cmd/migrate
+
+# --- Runtime stage ---
+FROM alpine:3.20
+
+# postgresql16 = the DB engine itself (bundled in this container per architecture decision)
+# su-exec = lightweight way to drop from root to the postgres user for DB commands
+# ca-certificates = needed for any outbound TLS
+RUN apk add --no-cache postgresql16 su-exec ca-certificates && \
+    mkdir -p /var/lib/postgresql/data && \
+    chown -R postgres:postgres /var/lib/postgresql && \
+    adduser -D -u 10001 appnutzer
+
+WORKDIR /app
+
+COPY --from=builder /public-app /app/public-app
+COPY --from=builder /migrate /app/migrate
+COPY templates ./templates
+COPY migrations ./migrations
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+EXPOSE 8111
+
+ENTRYPOINT ["/app/start.sh"]
