@@ -38,10 +38,14 @@ func main() {
 
 	mux.HandleFunc("GET /healthz", handleHealthz)
 
-	// Auth routes — handlers to be implemented next
+	// Auth routes
 	mux.HandleFunc("GET /login", handleLoginPage)
 	mux.HandleFunc("POST /login", handleLoginSubmit)
 	mux.HandleFunc("POST /logout", handleLogout)
+
+	// Protected routes — content management handlers will be added here
+	// in the next step, all wrapped in AuthRequired
+	mux.HandleFunc("GET /", AuthRequired(handleDashboard))
 
 	port := os.Getenv("ADMIN_PORT")
 	if port == "" {

@@ -1,0 +1,31 @@
+services:
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: renovaora-admin
+    restart: unless-stopped
+    profiles:
+      - admin   # not started by `docker compose up` alone — must be explicitly requested
+    environment:
+      POSTGRES_USER: ${ADMIN_DB_USER}
+      POSTGRES_PASSWORD: ${ADMIN_DB_PASSWORD}
+      DATABASE_URL: postgres://${ADMIN_DB_USER}:${ADMIN_DB_PASSWORD}@localhost:5432/postgres?sslmode=disable
+      ADMIN_PORT: "8002"
+    ports:
+      # Bound to 127.0.0.1 only — never reachable from outside this host,
+      # accessed exclusively via SSH tunnel per the architecture plan
+      - "127.0.0.1:8002:8002"
+    volumes:
+      - admin_db_data:/var/lib/postgresql/data
+    networks:
+      - admin-net
+
+networks:
+  admin-net:
+    name: renovaora-admin-net
+    driver: bridge
+
+volumes:
+  admin_db_data:
+    name: renovaora-admin-db-data

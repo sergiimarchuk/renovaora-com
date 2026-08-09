@@ -38,3 +38,5 @@ go.work.sum
 /media/live/
 docker-compose.override.yml
 renovaora-com.backup-m1/
+admin/admin
+public/public
