@@ -12,8 +12,8 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /admin-app .
 
 # Build the migrate CLI (used at container startup to apply schema migrations).
-# Uses `go install` with a pinned version and explicit GOBIN — builds in its
-# own isolated module context, does NOT need to be in our go.mod/go.sum.
+# Uses `go install` with a pinned version — this builds in its own isolated
+# module context and does NOT need to be listed in our project's go.mod/go.sum.
 RUN CGO_ENABLED=0 GOOS=linux GOBIN=/tmp/gobin go install -ldflags="-s -w" -tags 'postgres' \
     github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1 && \
     mv /tmp/gobin/migrate /migrate
@@ -25,6 +25,7 @@ FROM alpine:3.20
 # instance from the public container's DB — different data volume,
 # different credentials, per the architecture decision)
 # su-exec = lightweight way to drop from root to the postgres user for DB commands
+# ca-certificates = needed for any outbound TLS
 RUN apk add --no-cache postgresql16 su-exec ca-certificates && \
     mkdir -p /var/lib/postgresql/data && \
     mkdir -p /run/postgresql && \
