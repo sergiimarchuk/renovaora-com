@@ -40,7 +40,14 @@
 - Running `go build` without `-o` writes the compiled binary into the repo directory itself, which can then get accidentally `git add`-ed — always build to a throwaway path (e.g. `-o /tmp/admin-test-build`) when just testing compilation, and keep `admin/admin` / `public/public` in `.gitignore` as a safety net
 - Double-check the current working directory (`pwd`) before running `tar -xzf ... --strip-components=1` or any `git` command — several mix-ups in this session came from running commands in the wrong directory (e.g. an unrelated `TimeTracking-dev` folder, or the stray outer `/opt/web` repo on the laptop)
 
-**Current status:** first `docker-compose --profile admin build admin` run in progress — image build started successfully (Go base layers pulling), not yet confirmed complete.
+**Current status:** ✅ **First successful end-to-end run of the admin container**, confirmed via `curl http://localhost:8002/healthz` → `200 OK` (tested both directly on the server and through an active SSH tunnel from the laptop). Postgres initialized, all 3 migrations applied, privileges dropped to `appnutzer`, Go app connected to the DB and listening on `:8002`.
+
+**Two real bugs found and fixed while getting the admin container to build/run — both also pre-emptively fixed in the public Dockerfile since it shares the same pattern:**
+1. **`golang-migrate` build failure** — Dockerfile originally used `go build` against the `github.com/golang-migrate/migrate/v4/cmd/migrate` package, which isn't listed in the project's own `go.mod`. Fixed by switching to `go install ...@v4.17.1` (pinned version), which builds in its own isolated module context and doesn't require the dependency to be declared locally.
+2. **`GOPATH` mismatch** — first attempt at the `go install` fix assumed the binary would land at `/root/go/bin/migrate`, but the `golang:1.22-alpine` base image actually defaults `GOPATH=/go`, not `/root/go`. Fixed by setting an explicit `GOBIN=/tmp/gobin` so the output location is unambiguous regardless of the base image's defaults.
+3. **Missing `/run/postgresql` directory** — Postgres failed to start with `could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory`. The Alpine `postgresql16` package doesn't create this directory automatically (unlike some other distros' init scripts). Fixed by adding `mkdir -p /run/postgresql` and `chown postgres:postgres` on it alongside the existing data directory setup.
+
+**Note on testing access:** `curl http://localhost:8002/...` only works either (a) run directly on the server itself, or (b) run on the laptop while an SSH port-forward tunnel is active (`ssh -L 8002:localhost:8002 ...`) — the port is intentionally bound to `127.0.0.1` only on the server, not reachable from the laptop directly, per the architecture's "admin never exposed to the internet" design.
 
 ## Implementation Progress
 
@@ -109,6 +116,12 @@ renovaora-com/
   - `handleLogout` — deletes the session server-side and clears the cookie
 - **`admin/middleware.go`** — `AuthRequired` wrapper: checks for a valid session cookie, redirects to `/login` (or `/login?timeout=1` if the session existed but expired) if invalid, otherwise attaches `userID` to the request context and calls the wrapped handler
 - **`admin/main.go`** updated — added a protected `GET /` route wrapped in `AuthRequired`, pointing at a placeholder `handleDashboard` that just confirms the auth gate works end-to-end (renders "Logged in" + a logout button)
+
+**First admin user created — with a security note:**
+- `--create-user` CLI mode was implemented and tested successfully: `docker exec -it renovaora-admin /app/admin-app --create-user` prompts for username + password (hidden input via `golang.org/x/term`), enforces a 12-character minimum, requires confirmation, and calls the existing `CreateUser` (bcrypt hash + insert)
+- **Incident:** the actual username/password chosen during testing were typed directly into this chat session, which is logged — that password must be treated as compromised. A weak, guessable password was also initially used.
+- **Fix — `--reset-password` CLI mode added:** `docker exec -it renovaora-admin /app/admin-app --reset-password` — same secure prompt flow, calls new `UpdateUserPassword` (in `admin/users.go`), which returns an explicit error if the username doesn't exist (`RowsAffected() == 0` check) rather than silently succeeding
+- **Going forward:** credentials should be generated (e.g. `openssl rand -base64 18`) and typed directly into terminal prompts — never pasted into this chat — and stored in a password manager
 
 **Not yet built:**
 - Admin container's Dockerfile + start.sh (same bundled pattern as public, port 8002 / auth DB)

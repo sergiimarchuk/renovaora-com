@@ -39,12 +39,14 @@ func main() {
 	}
 	log.Println("connected to auth database")
 
-	// --create-user is a one-off CLI mode, not an HTTP route — this system
-	// has no public registration by design, so this is the only way to
-	// create an admin account. Running it exits immediately afterward
-	// rather than starting the HTTP server.
+	// --create-user and --reset-password are one-off CLI modes, not HTTP
+	// routes — this system has no public registration by design.
 	if len(os.Args) > 1 && os.Args[1] == "--create-user" {
 		runCreateUser(ctx)
+		return
+	}
+	if len(os.Args) > 1 && os.Args[1] == "--reset-password" {
+		runResetPassword(ctx)
 		return
 	}
 
@@ -98,6 +100,41 @@ func runCreateUser(ctx context.Context) {
 		log.Fatal("username cannot be empty")
 	}
 
+	password := promptPassword()
+
+	if err := CreateUser(ctx, username, password); err != nil {
+		log.Fatalf("failed to create user: %v", err)
+	}
+
+	fmt.Printf("User %q created successfully.\n", username)
+}
+
+// runResetPassword interactively prompts for an existing username and a
+// new password, then updates the stored hash. Intended to be run via:
+//   docker exec -it renovaora-admin /app/admin-app --reset-password
+func runResetPassword(ctx context.Context) {
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Username: ")
+	username, _ := reader.ReadString('\n')
+	username = strings.TrimSpace(username)
+	if username == "" {
+		log.Fatal("username cannot be empty")
+	}
+
+	password := promptPassword()
+
+	if err := UpdateUserPassword(ctx, username, password); err != nil {
+		log.Fatalf("failed to reset password: %v", err)
+	}
+
+	fmt.Printf("Password for %q updated successfully.\n", username)
+}
+
+// promptPassword reads a password twice (hidden input, no terminal echo)
+// and confirms they match before returning it. Exits on mismatch or if
+// the password is too short.
+func promptPassword() string {
 	fmt.Print("Password: ")
 	passwordBytes, err := term.ReadPassword(int(syscall.Stdin))
 	fmt.Println() // newline since ReadPassword doesn't echo the Enter key
@@ -119,10 +156,6 @@ func runCreateUser(ctx context.Context) {
 		log.Fatal("passwords do not match")
 	}
 
-	if err := CreateUser(ctx, username, password); err != nil {
-		log.Fatalf("failed to create user: %v", err)
-	}
-
-	fmt.Printf("User %q created successfully.\n", username)
+	return password
 }
 

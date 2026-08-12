@@ -1,6 +1,9 @@
 package main
 
-import "context"
+import (
+	"context"
+	"fmt"
+)
 
 // User mirrors a row in the users table.
 type User struct {
@@ -22,6 +25,27 @@ func CreateUser(ctx context.Context, username, password string) error {
 		username, hash,
 	)
 	return err
+}
+
+// UpdateUserPassword hashes the given password and updates it for an
+// existing active user. Returns an error if no matching user exists.
+func UpdateUserPassword(ctx context.Context, username, newPassword string) error {
+	hash, err := HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+	tag, err := db.Exec(ctx,
+		`UPDATE users SET password_hash = $1
+		 WHERE username = $2 AND deleted_at IS NULL`,
+		hash, username,
+	)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return fmt.Errorf("no active user found with username %q", username)
+	}
+	return nil
 }
 
 // GetUserByUsername looks up an active (non-deleted) user by username.
