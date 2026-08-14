@@ -123,6 +123,8 @@ renovaora-com/
 - **Fix — `--reset-password` CLI mode added:** `docker exec -it renovaora-admin /app/admin-app --reset-password` — same secure prompt flow, calls new `UpdateUserPassword` (in `admin/users.go`), which returns an explicit error if the username doesn't exist (`RowsAffected() == 0` check) rather than silently succeeding
 - **Going forward:** credentials should be generated (e.g. `openssl rand -base64 18`) and typed directly into terminal prompts — never pasted into this chat — and stored in a password manager
 
+**✅ Full login flow confirmed working end-to-end** — logged in via `/login` through the SSH tunnel, reached the protected dashboard ("Logged in / Content management UI not yet implemented. / Log out"). Confirms bcrypt password check, session creation/cookie, and `AuthRequired` middleware are all functioning correctly together. Container has been stable with no crashes (47+ hours uptime as of this check).
+
 **Not yet built:**
 - Admin container's Dockerfile + start.sh (same bundled pattern as public, port 8002 / auth DB)
 - `docker-compose.yml` (env var wiring, network segmentation, volumes)
