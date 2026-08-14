@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{.Title}} - Admin</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .nav { background: #333; color: white; padding: 10px 20px; margin: -20px -20px 20px -20px; border-radius: 8px 8px 0 0; }
+        .nav a { color: white; margin-right: 15px; text-decoration: none; }
+        .nav a:hover { text-decoration: underline; }
+        .nav .logout { float: right; background: #c0392b; padding: 5px 15px; border-radius: 4px; }
+        .flash { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .flash-success { background: #d4edda; color: #155724; }
+        .flash-error { background: #f8d7da; color: #721c24; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        .btn { display: inline-block; padding: 5px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; }
+        .btn-danger { background: #dc3545; }
+        .btn-success { background: #28a745; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .form-group textarea { height: 300px; font-family: monospace; }
+        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 12px; }
+        .status-draft { background: #ffc107; color: #333; }
+        .status-published { background: #28a745; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="/admin">Dashboard</a>
+            <a href="/admin/pages">Pages</a>
+            <a href="/admin/articles">Articles</a>
+            <a href="/admin/media">Media</a>
+            <a href="/admin/contact">Contact</a>
+            <a href="/admin" class="logout">Logout</a>
+        </div>
+
+        {{if .Flash}}
+        <div class="flash flash-{{.FlashType}}">{{.Flash}}</div>
+        {{end}}
+
+        {{block "content" .}}{{end}}
+    </div>
+</body>
+</html>

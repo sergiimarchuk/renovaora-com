@@ -1,0 +1,33 @@
+{{define "content"}}
+<h1>Pages</h1>
+<a href="/admin/pages/new" class="btn btn-success">New Page</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Slug</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range .Pages}}
+        <tr>
+            <td>{{.Title}}</td>
+            <td>{{.Slug}}</td>
+            <td><span class="status-badge status-{{.Status}}">{{.Status}}</span></td>
+            <td>{{.CreatedAt.Format "2006-01-02 15:04"}}</td>
+            <td>
+                <a href="/admin/pages/{{.ID}}" class="btn">View</a>
+                <a href="/admin/pages/{{.ID}}/edit" class="btn">Edit</a>
+                <form action="/admin/pages/{{.ID}}/delete" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this page?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{end}}

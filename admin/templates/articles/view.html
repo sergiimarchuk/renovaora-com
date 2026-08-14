@@ -1,0 +1,13 @@
+{{define "content"}}
+<h1>{{.Article.Title}}</h1>
+<p><strong>Slug:</strong> {{.Article.Slug}}</p>
+<p><strong>Status:</strong> <span class="status-badge status-{{.Article.Status}}">{{.Article.Status}}</span></p>
+<p><strong>Created:</strong> {{.Article.CreatedAt.Format "2006-01-02 15:04"}}</p>
+{{if .Article.PublishedAt}}
+<p><strong>Published:</strong> {{.Article.PublishedAt.Format "2006-01-02 15:04"}}</p>
+{{end}}
+<hr>
+<pre>{{.Article.BodyMarkdown}}</pre>
+<a href="/admin/articles/{{.Article.ID}}/edit" class="btn">Edit</a>
+<a href="/admin/articles" class="btn">Back</a>
+{{end}}

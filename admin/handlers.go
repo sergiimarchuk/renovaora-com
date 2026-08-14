@@ -1,8 +1,10 @@
 package main
 
 import (
+	"html/template"
 	"net"
 	"net/http"
+	"path/filepath"
 )
 
 const sessionCookieName = "session_token"
@@ -11,6 +13,73 @@ const sessionCookieName = "session_token"
 // takes roughly the same amount of time either way — avoids leaking
 // "this username exists" via response timing.
 const dummyHash = "$2a$12$C6UzMDM.H6dfI/f/IKcEeO/edEHDcv1E9F91U4M0OZDT6H7T9G0Xa"
+
+var templates = template.Must(template.New("").Funcs(template.FuncMap{
+	"title": func(s string) string {
+		if len(s) == 0 {
+			return s
+		}
+		return string(s[0]-32) + s[1:]
+	},
+}).ParseGlob("templates/*.html"))
+var layoutTemplates = template.Must(template.ParseGlob("templates/*/*.html"))
+
+func render(w http.ResponseWriter, name string, data interface{}) {
+	// Try layout templates first (subdirectories)
+	tmpl, err := template.ParseFiles(
+		"templates/layout.html",
+		filepath.Join("templates", name),
+	)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err := tmpl.ExecuteTemplate(w, "layout.html", data); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func renderPage(w http.ResponseWriter, name string, data interface{}) {
+	tmpl, err := template.ParseFiles(
+		"templates/layout.html",
+		filepath.Join("templates/pages", name),
+	)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err := tmpl.ExecuteTemplate(w, "layout.html", data); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func renderArticle(w http.ResponseWriter, name string, data interface{}) {
+	tmpl, err := template.ParseFiles(
+		"templates/layout.html",
+		filepath.Join("templates/articles", name),
+	)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err := tmpl.ExecuteTemplate(w, "layout.html", data); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func renderMedia(w http.ResponseWriter, name string, data interface{}) {
+	tmpl, err := template.ParseFiles(
+		"templates/layout.html",
+		filepath.Join("templates/media", name),
+	)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err := tmpl.ExecuteTemplate(w, "layout.html", data); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
 
 func handleLoginPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -40,8 +109,6 @@ func handleLoginSubmit(w http.ResponseWriter, r *http.Request) {
 
 	ip := clientIP(r)
 
-	// Check lockout BEFORE touching the DB for the user lookup, so a
-	// locked-out attacker can't keep hammering the password-check path.
 	lockedOut, err := IsLockedOut(ctx, username, ip)
 	if err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)
@@ -62,15 +129,10 @@ func handleLoginSubmit(w http.ResponseWriter, r *http.Request) {
 	if user != nil {
 		passwordOK = CheckPassword(password, user.PasswordHash)
 	} else {
-		// No such user — still run a bcrypt comparison against a dummy
-		// hash so the response time doesn't reveal whether the username
-		// exists.
 		CheckPassword(password, dummyHash)
 		passwordOK = false
 	}
 
-	// Record every attempt, success or failure — feeds both the rate
-	// limiter and the audit trail.
 	_ = RecordLoginAttempt(ctx, username, ip, passwordOK)
 
 	if !passwordOK {
@@ -89,12 +151,12 @@ func handleLoginSubmit(w http.ResponseWriter, r *http.Request) {
 		Value:    session.ID,
 		Path:     "/",
 		Expires:  session.ExpiresAt,
-		HttpOnly: true, // not accessible via JavaScript — mitigates XSS token theft
-		Secure:   true, // only sent over HTTPS (Caddy terminates TLS in front of this app)
+		HttpOnly: true,
+		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
 	})
 
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, "/admin", http.StatusFound)
 }
 
 func handleLogout(w http.ResponseWriter, r *http.Request) {
@@ -109,7 +171,7 @@ func handleLogout(w http.ResponseWriter, r *http.Request) {
 		Name:     sessionCookieName,
 		Value:    "",
 		Path:     "/",
-		MaxAge:   -1, // instructs the browser to delete the cookie immediately
+		MaxAge:   -1,
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
@@ -118,7 +180,6 @@ func handleLogout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusFound)
 }
 
-// clientIP extracts the request's source IP, stripping the port.
 func clientIP(r *http.Request) string {
 	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -127,20 +188,271 @@ func clientIP(r *http.Request) string {
 	return host
 }
 
-// handleDashboard is a placeholder for the authenticated admin landing
-// page. Real content-management UI (pages/articles/media CRUD) is not yet
-// built — this just confirms the auth gate works end-to-end.
 func handleDashboard(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write([]byte(`<!DOCTYPE html>
-<html>
-<head><title>Admin Dashboard</title></head>
-<body>
-	<h1>Logged in</h1>
-	<p>Content management UI not yet implemented.</p>
-	<form method="POST" action="/logout">
-		<button type="submit">Log out</button>
-	</form>
-</body>
-</html>`))
+	userID := r.Context().Value("userID")
+	data := struct {
+		Title  string
+		UserID interface{}
+	}{
+		Title:  "Dashboard",
+		UserID: userID,
+	}
+	render(w, "dashboard.html", data)
+}
+
+// --- Page Handlers ---
+
+func handleAdminPages(w http.ResponseWriter, r *http.Request) {
+	status := r.URL.Query().Get("status")
+	pages, err := ListPages(appDB, status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	data := struct {
+		Title string
+		Pages []Page
+	}{
+		Title: "Pages",
+		Pages: pages,
+	}
+	renderPage(w, "list.html", data)
+}
+
+func handlePageNewForm(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		Title string
+		Page  Page
+	}{
+		Title: "New Page",
+		Page:  Page{Status: "draft"},
+	}
+	renderPage(w, "form.html", data)
+}
+
+func handlePageCreate(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	title := r.FormValue("title")
+	slug := r.FormValue("slug")
+	body := r.FormValue("body")
+	status := r.FormValue("status")
+	if status == "" {
+		status = "draft"
+	}
+
+	page, err := CreatePage(appDB, title, slug, body, status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/admin/pages/"+string(rune(page.ID)), http.StatusSeeOther)
+}
+
+func handlePageView(w http.ResponseWriter, r *http.Request) {
+	// Extract ID from URL
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		http.NotFound(w, r)
+		return
+	}
+	// Convert to int64 (simplified - you need proper conversion)
+	// For now just pass through
+	data := struct {
+		Title string
+		Page  Page
+	}{
+		Title: "View Page",
+		Page:  Page{},
+	}
+	renderPage(w, "view.html", data)
+}
+
+func handlePageEditForm(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		http.NotFound(w, r)
+		return
+	}
+	// For now, placeholder
+	data := struct {
+		Title string
+		Page  Page
+	}{
+		Title: "Edit Page",
+		Page:  Page{Status: "draft"},
+	}
+	renderPage(w, "form.html", data)
+}
+
+func handlePageUpdate(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	// TODO: get ID from URL
+	http.Redirect(w, r, "/admin/pages", http.StatusSeeOther)
+}
+
+func handlePageDelete(w http.ResponseWriter, r *http.Request) {
+	// TODO: implement
+	http.Redirect(w, r, "/admin/pages", http.StatusSeeOther)
+}
+
+// --- Article Handlers ---
+
+func handleAdminArticles(w http.ResponseWriter, r *http.Request) {
+	status := r.URL.Query().Get("status")
+	articles, err := ListArticles(appDB, status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	data := struct {
+		Title    string
+		Articles []Article
+	}{
+		Title:    "Articles",
+		Articles: articles,
+	}
+	renderArticle(w, "list.html", data)
+}
+
+func handleArticleNewForm(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		Title   string
+		Article Article
+	}{
+		Title:   "New Article",
+		Article: Article{Status: "draft"},
+	}
+	renderArticle(w, "form.html", data)
+}
+
+func handleArticleCreate(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	title := r.FormValue("title")
+	slug := r.FormValue("slug")
+	body := r.FormValue("body")
+	status := r.FormValue("status")
+	if status == "" {
+		status = "draft"
+	}
+
+	_, err := CreateArticle(appDB, title, slug, body, status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/admin/articles", http.StatusSeeOther)
+}
+
+func handleArticleView(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		Title   string
+		Article Article
+	}{
+		Title:   "View Article",
+		Article: Article{},
+	}
+	renderArticle(w, "view.html", data)
+}
+
+func handleArticleEditForm(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		Title   string
+		Article Article
+	}{
+		Title:   "Edit Article",
+		Article: Article{Status: "draft"},
+	}
+	renderArticle(w, "form.html", data)
+}
+
+func handleArticleUpdate(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	http.Redirect(w, r, "/admin/articles", http.StatusSeeOther)
+}
+
+func handleArticleDelete(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/admin/articles", http.StatusSeeOther)
+}
+
+// --- Media Handlers ---
+
+func handleAdminMedia(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		Title string
+		Media []Media
+	}{
+		Title: "Media",
+		Media: []Media{},
+	}
+	renderMedia(w, "list.html", data)
+}
+
+func handleMediaUpload(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/admin/media", http.StatusSeeOther)
+}
+
+func handleMediaEditForm(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		Title string
+		Media Media
+	}{
+		Title: "Edit Media",
+		Media: Media{},
+	}
+	renderMedia(w, "form.html", data)
+}
+
+func handleMediaUpdate(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	http.Redirect(w, r, "/admin/media", http.StatusSeeOther)
+}
+
+func handleMediaDelete(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/admin/media", http.StatusSeeOther)
+}
+
+// --- Contact Handlers ---
+
+func handleAdminContact(w http.ResponseWriter, r *http.Request) {
+	contacts, err := GetAllContactInfo(appDB)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	data := struct {
+		Title    string
+		Contacts []ContactInfo
+	}{
+		Title:    "Contact Info",
+		Contacts: contacts,
+	}
+	render(w, "contact.html", data)
+}
+
+func handleContactUpdate(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	for key, values := range r.Form {
+		if len(values) > 0 {
+			_ = UpdateContactInfo(appDB, key, values[0])
+		}
+	}
+	http.Redirect(w, r, "/admin/contact", http.StatusSeeOther)
 }

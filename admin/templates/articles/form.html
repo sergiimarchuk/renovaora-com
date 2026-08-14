@@ -1,0 +1,27 @@
+{{define "content"}}
+<h1>{{if .Article.ID}}Edit{{else}}New{{end}} Article</h1>
+
+<form method="POST" action="{{if .Article.ID}}/admin/articles/{{.Article.ID}}/update{{else}}/admin/articles{{end}}">
+    <div class="form-group">
+        <label>Title</label>
+        <input type="text" name="title" value="{{.Article.Title}}" required>
+    </div>
+    <div class="form-group">
+        <label>Slug</label>
+        <input type="text" name="slug" value="{{.Article.Slug}}" placeholder="auto-generated from title">
+    </div>
+    <div class="form-group">
+        <label>Body (Markdown)</label>
+        <textarea name="body">{{.Article.BodyMarkdown}}</textarea>
+    </div>
+    <div class="form-group">
+        <label>Status</label>
+        <select name="status">
+            <option value="draft" {{if eq .Article.Status "draft"}}selected{{end}}>Draft</option>
+            <option value="published" {{if eq .Article.Status "published"}}selected{{end}}>Published</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
+    <a href="/admin/articles" class="btn">Cancel</a>
+</form>
+{{end}}

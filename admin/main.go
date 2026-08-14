@@ -32,15 +32,12 @@ func main() {
 	}
 	defer db.Close()
 
-	// Fail fast if the DB isn't actually reachable, rather than starting
-	// the HTTP server and only discovering the problem on first request
 	if err := db.Ping(ctx); err != nil {
 		log.Fatalf("database ping failed: %v", err)
 	}
 	log.Println("connected to auth database")
 
-	// --create-user and --reset-password are one-off CLI modes, not HTTP
-	// routes — this system has no public registration by design.
+	// CLI modes
 	if len(os.Args) > 1 && os.Args[1] == "--create-user" {
 		runCreateUser(ctx)
 		return
@@ -52,6 +49,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	// Health
 	mux.HandleFunc("GET /healthz", handleHealthz)
 
 	// Auth routes
@@ -59,9 +57,38 @@ func main() {
 	mux.HandleFunc("POST /login", handleLoginSubmit)
 	mux.HandleFunc("POST /logout", handleLogout)
 
-	// Protected routes — content management handlers will be added here
-	// in the next step, all wrapped in AuthRequired
+	// Dashboard
 	mux.HandleFunc("GET /", AuthRequired(handleDashboard))
+	mux.HandleFunc("GET /admin", AuthRequired(handleDashboard))
+
+	// Pages
+	mux.HandleFunc("GET /admin/pages", AuthRequired(handleAdminPages))
+	mux.HandleFunc("GET /admin/pages/new", AuthRequired(handlePageNewForm))
+	mux.HandleFunc("POST /admin/pages", AuthRequired(handlePageCreate))
+	mux.HandleFunc("GET /admin/pages/{id}", AuthRequired(handlePageView))
+	mux.HandleFunc("GET /admin/pages/{id}/edit", AuthRequired(handlePageEditForm))
+	mux.HandleFunc("POST /admin/pages/{id}/update", AuthRequired(handlePageUpdate))
+	mux.HandleFunc("POST /admin/pages/{id}/delete", AuthRequired(handlePageDelete))
+
+	// Articles
+	mux.HandleFunc("GET /admin/articles", AuthRequired(handleAdminArticles))
+	mux.HandleFunc("GET /admin/articles/new", AuthRequired(handleArticleNewForm))
+	mux.HandleFunc("POST /admin/articles", AuthRequired(handleArticleCreate))
+	mux.HandleFunc("GET /admin/articles/{id}", AuthRequired(handleArticleView))
+	mux.HandleFunc("GET /admin/articles/{id}/edit", AuthRequired(handleArticleEditForm))
+	mux.HandleFunc("POST /admin/articles/{id}/update", AuthRequired(handleArticleUpdate))
+	mux.HandleFunc("POST /admin/articles/{id}/delete", AuthRequired(handleArticleDelete))
+
+	// Media
+	mux.HandleFunc("GET /admin/media", AuthRequired(handleAdminMedia))
+	mux.HandleFunc("POST /admin/media/upload", AuthRequired(handleMediaUpload))
+	mux.HandleFunc("GET /admin/media/{id}/edit", AuthRequired(handleMediaEditForm))
+	mux.HandleFunc("POST /admin/media/{id}/update", AuthRequired(handleMediaUpdate))
+	mux.HandleFunc("POST /admin/media/{id}/delete", AuthRequired(handleMediaDelete))
+
+	// Contact
+	mux.HandleFunc("GET /admin/contact", AuthRequired(handleAdminContact))
+	mux.HandleFunc("POST /admin/contact", AuthRequired(handleContactUpdate))
 
 	port := os.Getenv("ADMIN_PORT")
 	if port == "" {
@@ -87,9 +114,29 @@ func handleHealthz(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("ok"))
 }
 
-// runCreateUser interactively prompts for a username and password on the
-// terminal and inserts a new admin user. Intended to be run once via:
-//   docker exec -it renovaora-admin /app/admin-app --create-user
+func handleDashboard(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("userID")
+	html := `
+<!DOCTYPE html>
+<html>
+<head><title>Admin Dashboard</title></head>
+<body>
+	<h1>Admin Dashboard</h1>
+	<p>Logged in as user ID: %v</p>
+	<ul>
+		<li><a href="/admin/pages">Pages</a></li>
+		<li><a href="/admin/articles">Articles</a></li>
+		<li><a href="/admin/media">Media</a></li>
+		<li><a href="/admin/contact">Contact Info</a></li>
+	</ul>
+	<form action="/logout" method="POST">
+		<button type="submit">Log out</button>
+	</form>
+</body>
+</html>`
+	fmt.Fprintf(w, html, userID)
+}
+
 func runCreateUser(ctx context.Context) {
 	reader := bufio.NewReader(os.Stdin)
 
@@ -109,9 +156,6 @@ func runCreateUser(ctx context.Context) {
 	fmt.Printf("User %q created successfully.\n", username)
 }
 
-// runResetPassword interactively prompts for an existing username and a
-// new password, then updates the stored hash. Intended to be run via:
-//   docker exec -it renovaora-admin /app/admin-app --reset-password
 func runResetPassword(ctx context.Context) {
 	reader := bufio.NewReader(os.Stdin)
 
@@ -131,13 +175,10 @@ func runResetPassword(ctx context.Context) {
 	fmt.Printf("Password for %q updated successfully.\n", username)
 }
 
-// promptPassword reads a password twice (hidden input, no terminal echo)
-// and confirms they match before returning it. Exits on mismatch or if
-// the password is too short.
 func promptPassword() string {
 	fmt.Print("Password: ")
 	passwordBytes, err := term.ReadPassword(int(syscall.Stdin))
-	fmt.Println() // newline since ReadPassword doesn't echo the Enter key
+	fmt.Println()
 	if err != nil {
 		log.Fatalf("failed to read password: %v", err)
 	}
@@ -158,4 +199,3 @@ func promptPassword() string {
 
 	return password
 }
-
