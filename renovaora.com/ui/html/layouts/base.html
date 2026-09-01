@@ -11,19 +11,150 @@
 <body class="bg-white text-gray-900 font-sans min-h-screen flex flex-col justify-between">
     <!-- White header with centered menu -->
     <header class="border-b border-gray-100 py-6 bg-white sticky top-0 z-50">
-        <nav class="flex justify-center items-center space-x-14 text-sm font-medium tracking-wide">
+        <nav class="flex flex-wrap justify-center items-center gap-x-10 gap-y-3 text-sm font-medium tracking-wide px-4">
             <a href="/" class="text-blue-600 hover:text-blue-800 transition">Home</a>
-            <a href="/about" class="text-gray-600 hover:text-blue-600 transition">About</a>
+            <a href="/about" class="text-gray-600 hover:text-blue-600 transition">About Us</a>
 
-            <!-- Contacts с выпадающим подменю -->
-            <div class="relative group">
+            <!-- Services: список категорий, у каждой — сайд-флаут с пунктами -->
+            <div class="relative group/services">
                 <button class="text-gray-600 hover:text-blue-600 transition flex items-center gap-1">
-                    Contacts
-                    <svg class="w-3 h-3 mt-0.5 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    Services
+                    <svg class="w-3 h-3 mt-0.5 transition-transform group-hover/services:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
-                <div class="absolute left-1/2 -translate-x-1/2 top-full pt-3 hidden group-hover:block z-50">
+
+                <div class="absolute left-0 top-full pt-3 hidden group-hover/services:block z-50">
+                    <div class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-64 text-left">
+
+                        <!-- Категория 1: House Restoration -->
+                        <div class="relative group/cat">
+                            <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
+                                House Restoration
+                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                            <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
+                                <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
+                                    <li><a href="/services#inspection-assessment" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Inspection &amp; assessment</a></li>
+                                    <li><a href="/services#restoration-after-damage" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Restoration after damage</a></li>
+                                    <li><a href="/services#wall-partition-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Repair of walls &amp; partitions</a></li>
+                                    <li><a href="/services#floor-ceiling-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Floor &amp; ceiling repairs</a></li>
+                                    <li><a href="/services#doors-windows-restoration" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Restoration of doors &amp; windows</a></li>
+                                    <li><a href="/services#staircase-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Staircase repairs</a></li>
+                                    <li><a href="/services#roof-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Roof &amp; roofing repairs</a></li>
+                                    <li><a href="/services#leak-detection" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Leak detection &amp; repair</a></li>
+                                    <li><a href="/services#facade-restoration" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Facade restoration</a></li>
+                                    <li><a href="/services#foundation-basement-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Foundation &amp; basement repairs</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Категория 2: Construction & Finishing -->
+                        <div class="relative group/cat">
+                            <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
+                                Construction &amp; Finishing
+                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                            <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
+                                <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
+                                    <li><a href="/services#masonry" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Brick &amp; block masonry</a></li>
+                                    <li><a href="/services#wall-plastering" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Wall plastering</a></li>
+                                    <li><a href="/services#wall-filling-smoothing" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Wall filling &amp; smoothing</a></li>
+                                    <li><a href="/services#painting" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Painting</a></li>
+                                    <li><a href="/services#wallpaper-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Wallpaper installation</a></li>
+                                    <li><a href="/services#tile-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Tile installation</a></li>
+                                    <li><a href="/services#flooring-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Laminate, parquet &amp; flooring</a></li>
+                                    <li><a href="/services#drywall-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Drywall installation</a></li>
+                                    <li><a href="/services#insulation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Insulation (walls, ceilings, floors)</a></li>
+                                    <li><a href="/services#waterproofing" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Waterproofing</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Категория 3: Electrical & Plumbing -->
+                        <div class="relative group/cat">
+                            <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
+                                Electrical &amp; Plumbing
+                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                            <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
+                                <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
+                                    <li><a href="/services#electrical-wiring-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Electrical wiring repairs</a></li>
+                                    <li><a href="/services#sockets-switches" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Sockets &amp; switches</a></li>
+                                    <li><a href="/services#lighting-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Lighting installation</a></li>
+                                    <li><a href="/services#water-supply-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Water supply repairs</a></li>
+                                    <li><a href="/services#sewerage-drainage-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Sewerage &amp; drainage repairs</a></li>
+                                    <li><a href="/services#heating-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Heating system installation</a></li>
+                                    <li><a href="/services#plumbing-fixtures" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Plumbing fixture installation</a></li>
+                                    <li><a href="/services#ventilation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Ventilation installation &amp; repairs</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Категория 4: Carpentry & Woodwork -->
+                        <div class="relative group/cat">
+                            <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
+                                Carpentry &amp; Woodwork
+                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                            <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
+                                <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
+                                    <li><a href="/services#wooden-walls-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Repair of wooden walls</a></li>
+                                    <li><a href="/services#beams-structural-supports" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Restoration of beams &amp; supports</a></li>
+                                    <li><a href="/services#wooden-floor-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Wooden floor repairs</a></li>
+                                    <li><a href="/services#door-restoration" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Door restoration</a></li>
+                                    <li><a href="/services#window-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Window repairs</a></li>
+                                    <li><a href="/services#terraces-verandas-canopies" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Terraces, verandas &amp; canopies</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Категория 5: Exterior Works -->
+                        <div class="relative group/cat">
+                            <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
+                                Exterior Works
+                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                            <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
+                                <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
+                                    <li><a href="/services#facade-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Facade repairs</a></li>
+                                    <li><a href="/services#facade-painting" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Facade painting</a></li>
+                                    <li><a href="/services#exterior-wall-insulation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Exterior wall insulation</a></li>
+                                    <li><a href="/services#fence-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Fence repairs</a></li>
+                                    <li><a href="/services#terrace-balcony-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Terrace &amp; balcony repairs</a></li>
+                                    <li><a href="/services#gutter-drainage" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Gutter &amp; rainwater drainage</a></li>
+                                    <li><a href="/services#foundation-perimeter" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Foundation repair (perimeter)</a></li>
+                                    <li><a href="/services#landscaping" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Landscaping &amp; improvement</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <a href="/projects" class="text-gray-600 hover:text-blue-600 transition">Projects</a>
+            <a href="/careers" class="text-gray-600 hover:text-blue-600 transition">Careers</a>
+
+            <!-- Contact Us с выпадающим подменю -->
+            <div class="relative group/contact">
+                <button class="text-gray-600 hover:text-blue-600 transition flex items-center gap-1">
+                    Contact Us
+                    <svg class="w-3 h-3 mt-0.5 transition-transform group-hover/contact:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div class="absolute left-1/2 -translate-x-1/2 top-full pt-3 hidden group-hover/contact:block z-50">
                     <div class="bg-white border border-gray-100 rounded-xl shadow-lg py-2 w-56">
                         <a href="mailto:info@renovaora.com" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">
                             Send Email
