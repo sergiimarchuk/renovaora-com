@@ -5,17 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{template "title" .}} | Renovaora</title>
-    <!-- Tailwind CSS v4 CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-white text-gray-900 font-sans min-h-screen flex flex-col justify-between">
-    <!-- White header with centered menu -->
     <header class="border-b border-gray-100 py-6 bg-white sticky top-0 z-50">
         <nav class="flex flex-wrap justify-center items-center gap-x-10 gap-y-3 text-sm font-medium tracking-wide px-4">
             <a href="/" class="text-blue-600 hover:text-blue-800 transition">Home</a>
             <a href="/about" class="text-gray-600 hover:text-blue-600 transition">About Us</a>
 
-            <!-- Services: список категорий, у каждой — сайд-флаут с пунктами -->
             <div class="relative group/services">
                 <button class="text-gray-600 hover:text-blue-600 transition flex items-center gap-1">
                     Services
@@ -23,11 +20,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
-
                 <div class="absolute left-0 top-full pt-3 hidden group-hover/services:block z-50">
                     <div class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-64 text-left">
-
-                        <!-- Категория 1: House Restoration -->
                         <div class="relative group/cat">
                             <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
                                 House Restoration
@@ -50,8 +44,6 @@
                                 </ul>
                             </div>
                         </div>
-
-                        <!-- Категория 2: Construction & Finishing -->
                         <div class="relative group/cat">
                             <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
                                 Construction &amp; Finishing
@@ -74,8 +66,6 @@
                                 </ul>
                             </div>
                         </div>
-
-                        <!-- Категория 3: Electrical & Plumbing -->
                         <div class="relative group/cat">
                             <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
                                 Electrical &amp; Plumbing
@@ -96,8 +86,6 @@
                                 </ul>
                             </div>
                         </div>
-
-                        <!-- Категория 4: Carpentry & Woodwork -->
                         <div class="relative group/cat">
                             <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
                                 Carpentry &amp; Woodwork
@@ -116,8 +104,6 @@
                                 </ul>
                             </div>
                         </div>
-
-                        <!-- Категория 5: Exterior Works -->
                         <div class="relative group/cat">
                             <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
                                 Exterior Works
@@ -138,7 +124,6 @@
                                 </ul>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -146,7 +131,6 @@
             <a href="/projects" class="text-gray-600 hover:text-blue-600 transition">Projects</a>
             <a href="/careers" class="text-gray-600 hover:text-blue-600 transition">Careers</a>
 
-            <!-- Contact Us с выпадающим подменю -->
             <div class="relative group/contact">
                 <button class="text-gray-600 hover:text-blue-600 transition flex items-center gap-1">
                     Contact Us
@@ -172,13 +156,11 @@
             <a href="/login" class="bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-gray-800 transition shadow-sm">Login</a>
         </nav>
     </header>
-    <!-- Centered content wrapper -->
     <main class="flex-grow flex flex-col items-center justify-center px-4 py-12">
         <div class="w-full flex justify-center">
             {{template "main" .}}
         </div>
     </main>
-    <!-- Footer -->
     <footer class="border-t border-gray-100 py-6 text-center text-sm text-gray-400 bg-white">
         &copy; 2026 Renovaora.com. All rights reserved.
     </footer>
