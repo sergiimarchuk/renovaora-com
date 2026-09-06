@@ -1,0 +1,21 @@
+{
+  "nav.home": "Home",
+  "nav.about": "About Us",
+  "nav.services": "Services",
+  "nav.projects": "Projects",
+  "nav.careers": "Careers",
+  "nav.contact": "Contact Us",
+  "nav.login": "Login",
+  "nav.contact.email": "Send Email",
+  "nav.contact.whatsapp": "WhatsApp Us",
+  "nav.contact.message": "Leave a Message",
+
+  "services.house_restoration": "House Restoration",
+  "services.construction_finishing": "Construction & Finishing",
+  "services.electrical_plumbing": "Electrical & Plumbing",
+  "services.carpentry_woodwork": "Carpentry & Woodwork",
+  "services.exterior_works": "Exterior Works",
+
+  "hero.subtitle": "Transforming houses, flats, and villas into perfection",
+  "hero.cta": "Get Started"
+}

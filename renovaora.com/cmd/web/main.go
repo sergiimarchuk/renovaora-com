@@ -1,25 +1,36 @@
 package main
 
 import (
-        "log"
-        "net/http"
+	"log"
+	"net/http"
 
-        "renovaora.com/internal/handlers"
+	"renovaora.com/internal/handlers"
+	"renovaora.com/internal/i18n"
 )
 
 func main() {
-        mux := http.NewServeMux()
+	// Загружаем переводы один раз при старте.
+	if err := i18n.Load("./internal/i18n"); err != nil {
+		log.Fatalf("failed to load translations: %v", err)
+	}
 
-        // Раздача статических файлов (css/js/картинки) из ui/static
-        fileServer := http.FileServer(http.Dir("./ui/static/"))
-        mux.Handle("/static/", http.StripPrefix("/static", fileServer))
+	mux := http.NewServeMux()
 
-        // Регистрация маршрута главной страницы
-        mux.HandleFunc("/", handlers.HomeHandler)
+	// Раздача статики (картинки, css, js)
+	fileServer := http.FileServer(http.Dir("./ui/static/"))
+	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
-        log.Println("Server successfully started on port :8080 (http://localhost:8080)")
-        err := http.ListenAndServe(":8080", mux)
-        if err != nil {
-                log.Fatal(err)
-        }
+	// "/" -> редирект на язык по умолчанию, напр. "/en/"
+	mux.HandleFunc("/", handlers.RootRedirect)
+
+	// Языковые маршруты
+	mux.HandleFunc("/en/", handlers.HomeHandler)
+	mux.HandleFunc("/it/", handlers.HomeHandler)
+	mux.HandleFunc("/de/", handlers.HomeHandler)
+
+	log.Println("Server successfully started on port :8080 (http://localhost:8080)")
+	err := http.ListenAndServe(":8080", mux)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

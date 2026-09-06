@@ -1,0 +1,19 @@
+{
+  "nav.home": "Home",
+  "nav.about": "Chi Siamo",
+  "nav.services": "Servizi",
+  "nav.projects": "Progetti",
+  "nav.careers": "Lavora con Noi",
+  "nav.contact": "Contattaci",
+  "nav.login": "Accedi",
+  "nav.contact.email": "Invia Email",
+  "nav.contact.whatsapp": "Scrivici su WhatsApp",
+  "nav.contact.message": "Lascia un Messaggio",
+  "services.house_restoration": "Ristrutturazione della Casa",
+  "services.construction_finishing": "Costruzione e Finiture",
+  "services.electrical_plumbing": "Impianti Elettrici e Idraulici",
+  "services.carpentry_woodwork": "Falegnameria",
+  "services.exterior_works": "Lavori Esterni",
+  "hero.subtitle": "Trasformiamo case, appartamenti e ville alla perfezione",
+  "hero.cta": "Inizia Ora"
+}

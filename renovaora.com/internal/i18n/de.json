@@ -1,0 +1,19 @@
+{
+  "nav.home": "Startseite",
+  "nav.about": "Über Uns",
+  "nav.services": "Leistungen",
+  "nav.projects": "Projekte",
+  "nav.careers": "Karriere",
+  "nav.contact": "Kontakt",
+  "nav.login": "Anmelden",
+  "nav.contact.email": "E-Mail Senden",
+  "nav.contact.whatsapp": "WhatsApp Schreiben",
+  "nav.contact.message": "Nachricht Hinterlassen",
+  "services.house_restoration": "Haussanierung",
+  "services.construction_finishing": "Bau und Ausbau",
+  "services.electrical_plumbing": "Elektro und Sanitär",
+  "services.carpentry_woodwork": "Zimmerei und Holzarbeiten",
+  "services.exterior_works": "Außenarbeiten",
+  "hero.subtitle": "Wir verwandeln Häuser, Wohnungen und Villen in Perfektion",
+  "hero.cta": "Jetzt Starten"
+}
