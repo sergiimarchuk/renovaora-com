@@ -1,4 +1,4 @@
-i{{define "base"}}
+{{define "base"}}
 <!DOCTYPE html>
 <html lang="{{.Lang}}">
 <head>
@@ -8,172 +8,343 @@ i{{define "base"}}
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-white text-gray-900 font-sans min-h-screen flex flex-col justify-between">
-    <header class="border-b border-gray-100 py-6 bg-white sticky top-0 z-50">
-        <nav class="flex flex-wrap justify-center items-center gap-x-10 gap-y-3 text-sm font-medium tracking-wide px-4">
-            <a href="/{{.Lang}}/" class="text-blue-600 hover:text-blue-800 transition">{{index .T "nav.home"}}</a>
-            <a href="/{{.Lang}}/about" class="text-gray-600 hover:text-blue-600 transition">{{index .T "nav.about"}}</a>
 
-            <!-- Services: список категорий, у каждой — сайд-флаут с пунктами -->
-            <div class="relative group/services">
-                <button class="text-gray-600 hover:text-blue-600 transition flex items-center gap-1">
-                    {{index .T "nav.services"}}
-                    <svg class="w-3 h-3 mt-0.5 transition-transform group-hover/services:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
+    <!-- Главный переключатель мобильного меню: живёт на уровне body,
+         чтобы быть прямым соседом панели-дровера ниже -->
+    <input type="checkbox" id="mobile-menu-toggle" class="peer/menu hidden">
 
-                <div class="absolute left-0 top-full pt-3 hidden group-hover/services:block z-50">
-                    <div class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-64 text-left">
+    <header class="border-b border-gray-100 bg-white sticky top-0 z-50">
+        <div class="flex items-center justify-between px-4 py-4 md:py-6">
 
-                        <div class="relative group/cat">
-                            <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
-                                {{index .T "services.house_restoration"}}
-                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                </svg>
+            <a href="/{{.Lang}}/" class="md:hidden text-lg font-extrabold bg-gradient-to-r from-green-600 via-gray-800 to-red-600 bg-clip-text text-transparent">
+                Renovaora
+            </a>
+
+            <!-- Десктопное меню: скрыто на мобильных -->
+            <nav class="hidden md:flex flex-wrap justify-center items-center gap-x-10 gap-y-3 text-sm font-medium tracking-wide flex-1">
+                <a href="/{{.Lang}}/" class="text-blue-600 hover:text-blue-800 transition">{{index .T "nav.home"}}</a>
+                <a href="/{{.Lang}}/about" class="text-gray-600 hover:text-blue-600 transition">{{index .T "nav.about"}}</a>
+
+                <div class="relative group/services">
+                    <button class="text-gray-600 hover:text-blue-600 transition flex items-center gap-1">
+                        {{index .T "nav.services"}}
+                        <svg class="w-3 h-3 mt-0.5 transition-transform group-hover/services:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div class="absolute left-0 top-full pt-3 hidden group-hover/services:block z-50">
+                        <div class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-64 text-left">
+                            <div class="relative group/cat">
+                                <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
+                                    {{index .T "services.house_restoration"}}
+                                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </div>
+                                <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
+                                    <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
+                                        <li><a href="/{{$.Lang}}/services#inspection-assessment" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Inspection &amp; assessment</a></li>
+                                        <li><a href="/{{$.Lang}}/services#restoration-after-damage" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Restoration after damage</a></li>
+                                        <li><a href="/{{$.Lang}}/services#wall-partition-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Repair of walls &amp; partitions</a></li>
+                                        <li><a href="/{{$.Lang}}/services#floor-ceiling-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Floor &amp; ceiling repairs</a></li>
+                                        <li><a href="/{{$.Lang}}/services#doors-windows-restoration" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Restoration of doors &amp; windows</a></li>
+                                        <li><a href="/{{$.Lang}}/services#staircase-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Staircase repairs</a></li>
+                                        <li><a href="/{{$.Lang}}/services#roof-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Roof &amp; roofing repairs</a></li>
+                                        <li><a href="/{{$.Lang}}/services#leak-detection" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Leak detection &amp; repair</a></li>
+                                        <li><a href="/{{$.Lang}}/services#facade-restoration" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Facade restoration</a></li>
+                                        <li><a href="/{{$.Lang}}/services#foundation-basement-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Foundation &amp; basement repairs</a></li>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
-                                <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
-                                    <li><a href="/{{$.Lang}}/services#inspection-assessment" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Inspection &amp; assessment</a></li>
-                                    <li><a href="/{{$.Lang}}/services#restoration-after-damage" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Restoration after damage</a></li>
-                                    <li><a href="/{{$.Lang}}/services#wall-partition-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Repair of walls &amp; partitions</a></li>
-                                    <li><a href="/{{$.Lang}}/services#floor-ceiling-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Floor &amp; ceiling repairs</a></li>
-                                    <li><a href="/{{$.Lang}}/services#doors-windows-restoration" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Restoration of doors &amp; windows</a></li>
-                                    <li><a href="/{{$.Lang}}/services#staircase-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Staircase repairs</a></li>
-                                    <li><a href="/{{$.Lang}}/services#roof-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Roof &amp; roofing repairs</a></li>
-                                    <li><a href="/{{$.Lang}}/services#leak-detection" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Leak detection &amp; repair</a></li>
-                                    <li><a href="/{{$.Lang}}/services#facade-restoration" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Facade restoration</a></li>
-                                    <li><a href="/{{$.Lang}}/services#foundation-basement-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Foundation &amp; basement repairs</a></li>
-                                </ul>
+                            <div class="relative group/cat">
+                                <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
+                                    {{index .T "services.construction_finishing"}}
+                                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </div>
+                                <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
+                                    <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
+                                        <li><a href="/{{$.Lang}}/services#masonry" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Brick &amp; block masonry</a></li>
+                                        <li><a href="/{{$.Lang}}/services#wall-plastering" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Wall plastering</a></li>
+                                        <li><a href="/{{$.Lang}}/services#wall-filling-smoothing" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Wall filling &amp; smoothing</a></li>
+                                        <li><a href="/{{$.Lang}}/services#painting" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Painting</a></li>
+                                        <li><a href="/{{$.Lang}}/services#wallpaper-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Wallpaper installation</a></li>
+                                        <li><a href="/{{$.Lang}}/services#tile-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Tile installation</a></li>
+                                        <li><a href="/{{$.Lang}}/services#flooring-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Laminate, parquet &amp; flooring</a></li>
+                                        <li><a href="/{{$.Lang}}/services#drywall-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Drywall installation</a></li>
+                                        <li><a href="/{{$.Lang}}/services#insulation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Insulation (walls, ceilings, floors)</a></li>
+                                        <li><a href="/{{$.Lang}}/services#waterproofing" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Waterproofing</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="relative group/cat">
+                                <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
+                                    {{index .T "services.electrical_plumbing"}}
+                                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </div>
+                                <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
+                                    <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
+                                        <li><a href="/{{$.Lang}}/services#electrical-wiring-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Electrical wiring repairs</a></li>
+                                        <li><a href="/{{$.Lang}}/services#sockets-switches" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Sockets &amp; switches</a></li>
+                                        <li><a href="/{{$.Lang}}/services#lighting-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Lighting installation</a></li>
+                                        <li><a href="/{{$.Lang}}/services#water-supply-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Water supply repairs</a></li>
+                                        <li><a href="/{{$.Lang}}/services#sewerage-drainage-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Sewerage &amp; drainage repairs</a></li>
+                                        <li><a href="/{{$.Lang}}/services#heating-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Heating system installation</a></li>
+                                        <li><a href="/{{$.Lang}}/services#plumbing-fixtures" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Plumbing fixture installation</a></li>
+                                        <li><a href="/{{$.Lang}}/services#ventilation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Ventilation installation &amp; repairs</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="relative group/cat">
+                                <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
+                                    {{index .T "services.carpentry_woodwork"}}
+                                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </div>
+                                <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
+                                    <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
+                                        <li><a href="/{{$.Lang}}/services#wooden-walls-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Repair of wooden walls</a></li>
+                                        <li><a href="/{{$.Lang}}/services#beams-structural-supports" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Restoration of beams &amp; supports</a></li>
+                                        <li><a href="/{{$.Lang}}/services#wooden-floor-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Wooden floor repairs</a></li>
+                                        <li><a href="/{{$.Lang}}/services#door-restoration" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Door restoration</a></li>
+                                        <li><a href="/{{$.Lang}}/services#window-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Window repairs</a></li>
+                                        <li><a href="/{{$.Lang}}/services#terraces-verandas-canopies" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Terraces, verandas &amp; canopies</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="relative group/cat">
+                                <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
+                                    {{index .T "services.exterior_works"}}
+                                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </div>
+                                <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
+                                    <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
+                                        <li><a href="/{{$.Lang}}/services#facade-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Facade repairs</a></li>
+                                        <li><a href="/{{$.Lang}}/services#facade-painting" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Facade painting</a></li>
+                                        <li><a href="/{{$.Lang}}/services#exterior-wall-insulation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Exterior wall insulation</a></li>
+                                        <li><a href="/{{$.Lang}}/services#fence-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Fence repairs</a></li>
+                                        <li><a href="/{{$.Lang}}/services#terrace-balcony-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Terrace &amp; balcony repairs</a></li>
+                                        <li><a href="/{{$.Lang}}/services#gutter-drainage" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Gutter &amp; rainwater drainage</a></li>
+                                        <li><a href="/{{$.Lang}}/services#foundation-perimeter" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Foundation repair (perimeter)</a></li>
+                                        <li><a href="/{{$.Lang}}/services#landscaping" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Landscaping &amp; improvement</a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="relative group/cat">
-                            <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
-                                {{index .T "services.construction_finishing"}}
-                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                </svg>
-                            </div>
-                            <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
-                                <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
-                                    <li><a href="/{{$.Lang}}/services#masonry" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Brick &amp; block masonry</a></li>
-                                    <li><a href="/{{$.Lang}}/services#wall-plastering" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Wall plastering</a></li>
-                                    <li><a href="/{{$.Lang}}/services#wall-filling-smoothing" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Wall filling &amp; smoothing</a></li>
-                                    <li><a href="/{{$.Lang}}/services#painting" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Painting</a></li>
-                                    <li><a href="/{{$.Lang}}/services#wallpaper-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Wallpaper installation</a></li>
-                                    <li><a href="/{{$.Lang}}/services#tile-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Tile installation</a></li>
-                                    <li><a href="/{{$.Lang}}/services#flooring-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Laminate, parquet &amp; flooring</a></li>
-                                    <li><a href="/{{$.Lang}}/services#drywall-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Drywall installation</a></li>
-                                    <li><a href="/{{$.Lang}}/services#insulation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Insulation (walls, ceilings, floors)</a></li>
-                                    <li><a href="/{{$.Lang}}/services#waterproofing" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Waterproofing</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="relative group/cat">
-                            <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
-                                {{index .T "services.electrical_plumbing"}}
-                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                </svg>
-                            </div>
-                            <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
-                                <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
-                                    <li><a href="/{{$.Lang}}/services#electrical-wiring-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Electrical wiring repairs</a></li>
-                                    <li><a href="/{{$.Lang}}/services#sockets-switches" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Sockets &amp; switches</a></li>
-                                    <li><a href="/{{$.Lang}}/services#lighting-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Lighting installation</a></li>
-                                    <li><a href="/{{$.Lang}}/services#water-supply-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Water supply repairs</a></li>
-                                    <li><a href="/{{$.Lang}}/services#sewerage-drainage-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Sewerage &amp; drainage repairs</a></li>
-                                    <li><a href="/{{$.Lang}}/services#heating-installation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Heating system installation</a></li>
-                                    <li><a href="/{{$.Lang}}/services#plumbing-fixtures" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Plumbing fixture installation</a></li>
-                                    <li><a href="/{{$.Lang}}/services#ventilation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Ventilation installation &amp; repairs</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="relative group/cat">
-                            <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
-                                {{index .T "services.carpentry_woodwork"}}
-                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                </svg>
-                            </div>
-                            <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
-                                <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
-                                    <li><a href="/{{$.Lang}}/services#wooden-walls-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Repair of wooden walls</a></li>
-                                    <li><a href="/{{$.Lang}}/services#beams-structural-supports" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Restoration of beams &amp; supports</a></li>
-                                    <li><a href="/{{$.Lang}}/services#wooden-floor-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Wooden floor repairs</a></li>
-                                    <li><a href="/{{$.Lang}}/services#door-restoration" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Door restoration</a></li>
-                                    <li><a href="/{{$.Lang}}/services#window-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Window repairs</a></li>
-                                    <li><a href="/{{$.Lang}}/services#terraces-verandas-canopies" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Terraces, verandas &amp; canopies</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="relative group/cat">
-                            <div class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition cursor-default">
-                                {{index .T "services.exterior_works"}}
-                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                </svg>
-                            </div>
-                            <div class="absolute left-full top-0 pl-2 hidden group-hover/cat:block">
-                                <ul class="bg-white border border-gray-100 rounded-xl shadow-xl py-2 w-72 space-y-0.5">
-                                    <li><a href="/{{$.Lang}}/services#facade-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Facade repairs</a></li>
-                                    <li><a href="/{{$.Lang}}/services#facade-painting" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Facade painting</a></li>
-                                    <li><a href="/{{$.Lang}}/services#exterior-wall-insulation" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Exterior wall insulation</a></li>
-                                    <li><a href="/{{$.Lang}}/services#fence-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Fence repairs</a></li>
-                                    <li><a href="/{{$.Lang}}/services#terrace-balcony-repair" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Terrace &amp; balcony repairs</a></li>
-                                    <li><a href="/{{$.Lang}}/services#gutter-drainage" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Gutter &amp; rainwater drainage</a></li>
-                                    <li><a href="/{{$.Lang}}/services#foundation-perimeter" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Foundation repair (perimeter)</a></li>
-                                    <li><a href="/{{$.Lang}}/services#landscaping" class="block px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">Landscaping &amp; improvement</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
-            </div>
 
-            <a href="/{{.Lang}}/projects" class="text-gray-600 hover:text-blue-600 transition">{{index .T "nav.projects"}}</a>
-            <a href="/{{.Lang}}/careers" class="text-gray-600 hover:text-blue-600 transition">{{index .T "nav.careers"}}</a>
+                <a href="/{{.Lang}}/projects" class="text-gray-600 hover:text-blue-600 transition">{{index .T "nav.projects"}}</a>
+                <a href="/{{.Lang}}/careers" class="text-gray-600 hover:text-blue-600 transition">{{index .T "nav.careers"}}</a>
 
-            <!-- Contact Us -->
-            <div class="relative group/contact">
-                <button class="text-gray-600 hover:text-blue-600 transition flex items-center gap-1">
-                    {{index .T "nav.contact"}}
-                    <svg class="w-3 h-3 mt-0.5 transition-transform group-hover/contact:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
-                <div class="absolute left-1/2 -translate-x-1/2 top-full pt-3 hidden group-hover/contact:block z-50">
-                    <div class="bg-white border border-gray-100 rounded-xl shadow-lg py-2 w-56">
-                        <a href="mailto:info@renovaora.com" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">
-                            {{index .T "nav.contact.email"}}
-                        </a>
-                        <a href="https://wa.me/1234567890" target="_blank" rel="noopener" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">
-                            {{index .T "nav.contact.whatsapp"}}
-                        </a>
-                        <a href="/{{.Lang}}/contacts#message" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">
-                            {{index .T "nav.contact.message"}}
-                        </a>
+                <div class="relative group/contact">
+                    <button class="text-gray-600 hover:text-blue-600 transition flex items-center gap-1">
+                        {{index .T "nav.contact"}}
+                        <svg class="w-3 h-3 mt-0.5 transition-transform group-hover/contact:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div class="absolute left-1/2 -translate-x-1/2 top-full pt-3 hidden group-hover/contact:block z-50">
+                        <div class="bg-white border border-gray-100 rounded-xl shadow-lg py-2 w-56">
+                            <a href="mailto:info@renovaora.com" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">
+                                {{index .T "nav.contact.email"}}
+                            </a>
+                            <a href="https://wa.me/1234567890" target="_blank" rel="noopener" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">
+                                {{index .T "nav.contact.whatsapp"}}
+                            </a>
+                            <a href="/{{.Lang}}/contacts#message" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition">
+                                {{index .T "nav.contact.message"}}
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <a href="/{{.Lang}}/login" class="bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-gray-800 transition shadow-sm">{{index .T "nav.login"}}</a>
+                <a href="/{{.Lang}}/login" class="bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-gray-800 transition shadow-sm">{{index .T "nav.login"}}</a>
 
-            <!-- Переключатель языка -->
-            <div class="flex items-center gap-2 text-xs font-semibold text-gray-400 border-l border-gray-200 pl-4 ml-2">
-                <a href="/en/" class="hover:text-blue-600 transition {{if eq .Lang "en"}}text-blue-600{{end}}">EN</a>
-                <span>/</span>
-                <a href="/it/" class="hover:text-blue-600 transition {{if eq .Lang "it"}}text-blue-600{{end}}">IT</a>
-                <span>/</span>
-                <a href="/de/" class="hover:text-blue-600 transition {{if eq .Lang "de"}}text-blue-600{{end}}">DE</a>
-            </div>
-        </nav>
+                <div class="flex items-center gap-2 text-xs font-semibold text-gray-400 border-l border-gray-200 pl-4 ml-2">
+                    <a href="/en/" class="hover:text-blue-600 transition {{if eq .Lang "en"}}text-blue-600{{end}}">EN</a>
+                    <span>/</span>
+                    <a href="/it/" class="hover:text-blue-600 transition {{if eq .Lang "it"}}text-blue-600{{end}}">IT</a>
+                    <span>/</span>
+                    <a href="/de/" class="hover:text-blue-600 transition {{if eq .Lang "de"}}text-blue-600{{end}}">DE</a>
+                </div>
+            </nav>
+
+            <!-- Кнопка-бургер: видна только на мобильных. Один клик — открыть, повторный — закрыть. -->
+            <label for="mobile-menu-toggle" class="md:hidden cursor-pointer p-2 -mr-2">
+                <svg class="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </label>
+        </div>
     </header>
+
+    <!-- Мобильная выезжающая панель. Прямой сосед чекбокса mobile-menu-toggle -> peer-checked/menu работает корректно. -->
+    <div class="hidden peer-checked/menu:flex md:hidden fixed inset-0 z-40 bg-white flex-col overflow-y-auto pt-20">
+        <label for="mobile-menu-toggle" class="fixed top-4 right-4 z-50 cursor-pointer p-2 bg-gray-100 rounded-full">
+            <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </label>
+
+        <div class="flex flex-col divide-y divide-gray-100 px-4">
+
+            <a href="/{{.Lang}}/" class="py-4 text-blue-600 font-medium">{{index .T "nav.home"}}</a>
+            <a href="/{{.Lang}}/about" class="py-4 text-gray-700 font-medium">{{index .T "nav.about"}}</a>
+
+            <!-- Services: аккордеон. Чекбокс, label и панель — прямые соседи внутри этого div. -->
+            <div>
+                <input type="checkbox" id="mobile-services-toggle" class="peer/services hidden">
+                <label for="mobile-services-toggle" class="py-4 flex items-center justify-between text-gray-700 font-medium cursor-pointer">
+                    {{index .T "nav.services"}}
+                    <svg class="w-4 h-4 transition-transform peer-checked/services:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </label>
+                <div class="hidden peer-checked/services:block pb-2">
+
+                    <div class="pl-3">
+                        <input type="checkbox" id="mobile-cat-house" class="peer/cat-house hidden">
+                        <label for="mobile-cat-house" class="py-2.5 flex items-center justify-between text-sm text-gray-600 cursor-pointer">
+                            {{index .T "services.house_restoration"}}
+                            <svg class="w-3.5 h-3.5 transition-transform peer-checked/cat-house:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </label>
+                        <div class="hidden peer-checked/cat-house:block pl-3 pb-2 space-y-2">
+                            <a href="/{{$.Lang}}/services#inspection-assessment" class="block py-1 text-sm text-gray-500">Inspection &amp; assessment</a>
+                            <a href="/{{$.Lang}}/services#restoration-after-damage" class="block py-1 text-sm text-gray-500">Restoration after damage</a>
+                            <a href="/{{$.Lang}}/services#wall-partition-repair" class="block py-1 text-sm text-gray-500">Repair of walls &amp; partitions</a>
+                            <a href="/{{$.Lang}}/services#floor-ceiling-repair" class="block py-1 text-sm text-gray-500">Floor &amp; ceiling repairs</a>
+                            <a href="/{{$.Lang}}/services#doors-windows-restoration" class="block py-1 text-sm text-gray-500">Restoration of doors &amp; windows</a>
+                            <a href="/{{$.Lang}}/services#staircase-repair" class="block py-1 text-sm text-gray-500">Staircase repairs</a>
+                            <a href="/{{$.Lang}}/services#roof-repair" class="block py-1 text-sm text-gray-500">Roof &amp; roofing repairs</a>
+                            <a href="/{{$.Lang}}/services#leak-detection" class="block py-1 text-sm text-gray-500">Leak detection &amp; repair</a>
+                            <a href="/{{$.Lang}}/services#facade-restoration" class="block py-1 text-sm text-gray-500">Facade restoration</a>
+                            <a href="/{{$.Lang}}/services#foundation-basement-repair" class="block py-1 text-sm text-gray-500">Foundation &amp; basement repairs</a>
+                        </div>
+                    </div>
+
+                    <div class="pl-3">
+                        <input type="checkbox" id="mobile-cat-construction" class="peer/cat-construction hidden">
+                        <label for="mobile-cat-construction" class="py-2.5 flex items-center justify-between text-sm text-gray-600 cursor-pointer">
+                            {{index .T "services.construction_finishing"}}
+                            <svg class="w-3.5 h-3.5 transition-transform peer-checked/cat-construction:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </label>
+                        <div class="hidden peer-checked/cat-construction:block pl-3 pb-2 space-y-2">
+                            <a href="/{{$.Lang}}/services#masonry" class="block py-1 text-sm text-gray-500">Brick &amp; block masonry</a>
+                            <a href="/{{$.Lang}}/services#wall-plastering" class="block py-1 text-sm text-gray-500">Wall plastering</a>
+                            <a href="/{{$.Lang}}/services#wall-filling-smoothing" class="block py-1 text-sm text-gray-500">Wall filling &amp; smoothing</a>
+                            <a href="/{{$.Lang}}/services#painting" class="block py-1 text-sm text-gray-500">Painting</a>
+                            <a href="/{{$.Lang}}/services#wallpaper-installation" class="block py-1 text-sm text-gray-500">Wallpaper installation</a>
+                            <a href="/{{$.Lang}}/services#tile-installation" class="block py-1 text-sm text-gray-500">Tile installation</a>
+                            <a href="/{{$.Lang}}/services#flooring-installation" class="block py-1 text-sm text-gray-500">Laminate, parquet &amp; flooring</a>
+                            <a href="/{{$.Lang}}/services#drywall-installation" class="block py-1 text-sm text-gray-500">Drywall installation</a>
+                            <a href="/{{$.Lang}}/services#insulation" class="block py-1 text-sm text-gray-500">Insulation (walls, ceilings, floors)</a>
+                            <a href="/{{$.Lang}}/services#waterproofing" class="block py-1 text-sm text-gray-500">Waterproofing</a>
+                        </div>
+                    </div>
+
+                    <div class="pl-3">
+                        <input type="checkbox" id="mobile-cat-electrical" class="peer/cat-electrical hidden">
+                        <label for="mobile-cat-electrical" class="py-2.5 flex items-center justify-between text-sm text-gray-600 cursor-pointer">
+                            {{index .T "services.electrical_plumbing"}}
+                            <svg class="w-3.5 h-3.5 transition-transform peer-checked/cat-electrical:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </label>
+                        <div class="hidden peer-checked/cat-electrical:block pl-3 pb-2 space-y-2">
+                            <a href="/{{$.Lang}}/services#electrical-wiring-repair" class="block py-1 text-sm text-gray-500">Electrical wiring repairs</a>
+                            <a href="/{{$.Lang}}/services#sockets-switches" class="block py-1 text-sm text-gray-500">Sockets &amp; switches</a>
+                            <a href="/{{$.Lang}}/services#lighting-installation" class="block py-1 text-sm text-gray-500">Lighting installation</a>
+                            <a href="/{{$.Lang}}/services#water-supply-repair" class="block py-1 text-sm text-gray-500">Water supply repairs</a>
+                            <a href="/{{$.Lang}}/services#sewerage-drainage-repair" class="block py-1 text-sm text-gray-500">Sewerage &amp; drainage repairs</a>
+                            <a href="/{{$.Lang}}/services#heating-installation" class="block py-1 text-sm text-gray-500">Heating system installation</a>
+                            <a href="/{{$.Lang}}/services#plumbing-fixtures" class="block py-1 text-sm text-gray-500">Plumbing fixture installation</a>
+                            <a href="/{{$.Lang}}/services#ventilation" class="block py-1 text-sm text-gray-500">Ventilation installation &amp; repairs</a>
+                        </div>
+                    </div>
+
+                    <div class="pl-3">
+                        <input type="checkbox" id="mobile-cat-carpentry" class="peer/cat-carpentry hidden">
+                        <label for="mobile-cat-carpentry" class="py-2.5 flex items-center justify-between text-sm text-gray-600 cursor-pointer">
+                            {{index .T "services.carpentry_woodwork"}}
+                            <svg class="w-3.5 h-3.5 transition-transform peer-checked/cat-carpentry:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </label>
+                        <div class="hidden peer-checked/cat-carpentry:block pl-3 pb-2 space-y-2">
+                            <a href="/{{$.Lang}}/services#wooden-walls-repair" class="block py-1 text-sm text-gray-500">Repair of wooden walls</a>
+                            <a href="/{{$.Lang}}/services#beams-structural-supports" class="block py-1 text-sm text-gray-500">Restoration of beams &amp; supports</a>
+                            <a href="/{{$.Lang}}/services#wooden-floor-repair" class="block py-1 text-sm text-gray-500">Wooden floor repairs</a>
+                            <a href="/{{$.Lang}}/services#door-restoration" class="block py-1 text-sm text-gray-500">Door restoration</a>
+                            <a href="/{{$.Lang}}/services#window-repair" class="block py-1 text-sm text-gray-500">Window repairs</a>
+                            <a href="/{{$.Lang}}/services#terraces-verandas-canopies" class="block py-1 text-sm text-gray-500">Terraces, verandas &amp; canopies</a>
+                        </div>
+                    </div>
+
+                    <div class="pl-3">
+                        <input type="checkbox" id="mobile-cat-exterior" class="peer/cat-exterior hidden">
+                        <label for="mobile-cat-exterior" class="py-2.5 flex items-center justify-between text-sm text-gray-600 cursor-pointer">
+                            {{index .T "services.exterior_works"}}
+                            <svg class="w-3.5 h-3.5 transition-transform peer-checked/cat-exterior:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </label>
+                        <div class="hidden peer-checked/cat-exterior:block pl-3 pb-2 space-y-2">
+                            <a href="/{{$.Lang}}/services#facade-repair" class="block py-1 text-sm text-gray-500">Facade repairs</a>
+                            <a href="/{{$.Lang}}/services#facade-painting" class="block py-1 text-sm text-gray-500">Facade painting</a>
+                            <a href="/{{$.Lang}}/services#exterior-wall-insulation" class="block py-1 text-sm text-gray-500">Exterior wall insulation</a>
+                            <a href="/{{$.Lang}}/services#fence-repair" class="block py-1 text-sm text-gray-500">Fence repairs</a>
+                            <a href="/{{$.Lang}}/services#terrace-balcony-repair" class="block py-1 text-sm text-gray-500">Terrace &amp; balcony repairs</a>
+                            <a href="/{{$.Lang}}/services#gutter-drainage" class="block py-1 text-sm text-gray-500">Gutter &amp; rainwater drainage</a>
+                            <a href="/{{$.Lang}}/services#foundation-perimeter" class="block py-1 text-sm text-gray-500">Foundation repair (perimeter)</a>
+                            <a href="/{{$.Lang}}/services#landscaping" class="block py-1 text-sm text-gray-500">Landscaping &amp; improvement</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <a href="/{{.Lang}}/projects" class="py-4 text-gray-700 font-medium">{{index .T "nav.projects"}}</a>
+            <a href="/{{.Lang}}/careers" class="py-4 text-gray-700 font-medium">{{index .T "nav.careers"}}</a>
+
+            <!-- Contact Us: аккордеон -->
+            <div>
+                <input type="checkbox" id="mobile-contact-toggle" class="peer/contact hidden">
+                <label for="mobile-contact-toggle" class="py-4 flex items-center justify-between text-gray-700 font-medium cursor-pointer">
+                    {{index .T "nav.contact"}}
+                    <svg class="w-4 h-4 transition-transform peer-checked/contact:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </label>
+                <div class="hidden peer-checked/contact:block pb-3 pl-3 space-y-2">
+                    <a href="mailto:info@renovaora.com" class="block py-1.5 text-sm text-gray-500">{{index .T "nav.contact.email"}}</a>
+                    <a href="https://wa.me/1234567890" target="_blank" rel="noopener" class="block py-1.5 text-sm text-gray-500">{{index .T "nav.contact.whatsapp"}}</a>
+                    <a href="/{{.Lang}}/contacts#message" class="block py-1.5 text-sm text-gray-500">{{index .T "nav.contact.message"}}</a>
+                </div>
+            </div>
+
+            <a href="/{{.Lang}}/login" class="py-4 text-gray-900 font-semibold">{{index .T "nav.login"}}</a>
+
+            <div class="flex items-center gap-3 py-5 text-sm font-semibold text-gray-500">
+                <a href="/en/" class="{{if eq .Lang "en"}}text-blue-600{{end}}">EN</a>
+                <span>/</span>
+                <a href="/it/" class="{{if eq .Lang "it"}}text-blue-600{{end}}">IT</a>
+                <span>/</span>
+                <a href="/de/" class="{{if eq .Lang "de"}}text-blue-600{{end}}">DE</a>
+            </div>
+        </div>
+    </div>
+
     <main class="flex-grow flex flex-col items-center justify-center px-4 py-12">
         <div class="w-full flex justify-center">
             {{template "main" .}}
