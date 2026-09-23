@@ -1,0 +1,44 @@
+{
+  "defaults": {
+    "image_path": "/opt/creation_vm/openSUSE-Leap-15.6-Minimal-VM.x86_64-Cloud.qcow2",
+    "gateway": "192.168.0.201",
+    "nameserver": "192.168.0.201 8.8.8.8 1.1.1.1",
+    "searchdomain": "p-stat.org.local",
+    "storage": "local-lvm",
+    "bridge": "vmbr0",
+    "vip": "192.168.0.160",
+    "lb_port": 8443
+  },
+  "vms": [
+    {
+      "id": 777,
+      "name": "k8s-master-1",
+      "memory": 4096,
+      "cores": 2,
+      "disk": 32,
+      "ip": "192.168.0.177",
+      "password": "123456",
+      "start": true
+    },
+    {
+      "id": 778,
+      "name": "k8s-master-2",
+      "memory": 4096,
+      "cores": 2,
+      "disk": 32,
+      "ip": "192.168.0.178",
+      "password": "123456",
+      "start": true
+    },
+    {
+      "id": 790,
+      "name": "k8s-master-3",
+      "memory": 4096,
+      "cores": 2,
+      "disk": 32,
+      "ip": "192.168.0.179",
+      "password": "123456",
+      "start": true
+    }
+  ]
+}

@@ -1,0 +1,413 @@
+
+[0;34m══════════════════════════════════════[0m
+[0;34m  HA Kubernetes кластер — openSUSE Leap 15.6[0m
+[0;34m══════════════════════════════════════[0m
+  Конфиг: k8s_ha_vms_config_1.json | Нод: 3 | VIP: 192.168.0.160:8443 | K8s: v1.34
+
+[0;34m══════════════════════════════════════[0m
+[0;34m  Часть 1: Проверка доступности нод[0m
+[0;34m══════════════════════════════════════[0m
+[0;34m[→][0m Ожидание SSH на k8s-master-1 (192.168.0.177)...
+[0;32m[✓][0m k8s-master-1 доступен
+
+[0;34m[→][0m Ожидание SSH на k8s-master-2 (192.168.0.178)...
+[0;32m[✓][0m k8s-master-2 доступен
+
+[0;34m[→][0m Ожидание SSH на k8s-master-3 (192.168.0.179)...
+[0;32m[✓][0m k8s-master-3 доступен
+
+[0;34m[→][0m Проверка, что VIP 192.168.0.160 свободен (не должен отвечать на ping)...
+[0;32m[✓][0m VIP 192.168.0.160 свободен
+
+[0;34m══════════════════════════════════════[0m
+[0;34m  Часть 2: Подготовка нод[0m
+[0;34m══════════════════════════════════════[0m
+[0;34m[→][0m Подготовка k8s-master-1 (192.168.0.177), keepalived priority=150 state=MASTER ...
+[1;33m[!][0m Ожидание освобождения zypper на 192.168.0.177...
+[0;32m[✓][0m zypper свободен
+=== [0/10] Отключение сетевого менеджмента cloud-init ===
+  cloud-init network management отключен — сеть теперь под ручным/netconfig контролем
+=== [1/10] Chrony ===
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'chrony' is already installed.
+No update candidate for 'chrony-4.1-150400.21.8.1.x86_64'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+=== [2/10] Swap ===
+=== [3/10] Модули ядра ===
+=== [4/10] sysctl ===
+=== [5/10] Firewall ===
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'firewalld' is already installed.
+No update candidate for 'firewalld-2.0.1-150600.3.12.1.noarch'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+Created symlink /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service → /usr/lib/systemd/system/firewalld.service.
+Created symlink /etc/systemd/system/multi-user.target.wants/firewalld.service → /usr/lib/systemd/system/firewalld.service.
+success
+Warning: ZONE_ALREADY_SET: trusted
+success
+Warning: ALREADY_ENABLED: 6443:tcp
+success
+Warning: ALREADY_ENABLED: 2379-2380:tcp
+success
+Warning: ALREADY_ENABLED: 10250:tcp
+success
+Warning: ALREADY_ENABLED: 10257:tcp
+success
+Warning: ALREADY_ENABLED: 10259:tcp
+success
+Warning: ALREADY_ENABLED: 8472:udp
+success
+Warning: ALREADY_ENABLED: 8443:tcp
+success
+Warning: ALREADY_ENABLED: vrrp
+success
+Warning: ZONE_ALREADY_SET: trusted
+success
+  Порты control-plane + LB (8443/tcp) + VRRP открыты
+=== [6/10] AppArmor ===
+  containerd -> complain mode
+=== [7/10] Containerd + conntrack + ethtool ===
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'conntrack-tools' is already installed.
+No update candidate for 'conntrack-tools-1.4.5-1.46.x86_64'. The highest available version is already installed.
+'ethtool' is already installed.
+No update candidate for 'ethtool-6.4-150600.7.3.2.x86_64'. The highest available version is already installed.
+'containerd' is already installed.
+No update candidate for 'containerd-1.7.29-150000.130.1.x86_64'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+=== [8/10] kubeadm kubelet kubectl (v1.34) ===
+Repository 'Update repository of openSUSE Backports' is up to date.
+Repository 'Update repository with updates from SUSE Linux Enterprise 15' is up to date.
+Repository 'Main Update Repository' is up to date.
+Repository 'Update Repository (Non-Oss)' is up to date.
+Repository 'Kubernetes' is up to date.
+Repository 'Non-OSS Repository' is up to date.
+Repository 'Open H.264 Codec (openSUSE Leap)' is up to date.
+Repository 'Main Repository' is up to date.
+All repositories have been refreshed.
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'kubeadm' is already installed.
+No update candidate for 'kubeadm-1.34.11-150500.1.1.x86_64'. The highest available version is already installed.
+'kubectl' is already installed.
+No update candidate for 'kubectl-1.34.11-150500.1.1.x86_64'. The highest available version is already installed.
+'kubelet' is already installed.
+No update candidate for 'kubelet-1.34.11-150500.1.1.x86_64'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+=== [9/10] keepalived + haproxy (VIP 192.168.0.160:8443) ===
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'haproxy' is already installed.
+No update candidate for 'haproxy-2.8.11+git0.01c1056a4-150600.3.9.1.x86_64'. The highest available version is already installed.
+'keepalived' is already installed.
+No update candidate for 'keepalived-2.2.8-150600.3.5.1.x86_64'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+  Using interface: eth0
+  keepalived + haproxy настроены (state=MASTER, priority=150)
+✓ k8s-master-1 готова!
+[0;32m[✓][0m k8s-master-1 подготовлена
+[0;34m[→][0m Подготовка k8s-master-2 (192.168.0.178), keepalived priority=120 state=BACKUP ...
+[1;33m[!][0m Ожидание освобождения zypper на 192.168.0.178...
+[0;32m[✓][0m zypper свободен
+=== [0/10] Отключение сетевого менеджмента cloud-init ===
+  cloud-init network management отключен — сеть теперь под ручным/netconfig контролем
+=== [1/10] Chrony ===
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'chrony' is already installed.
+No update candidate for 'chrony-4.1-150400.21.8.1.x86_64'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+=== [2/10] Swap ===
+=== [3/10] Модули ядра ===
+=== [4/10] sysctl ===
+=== [5/10] Firewall ===
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'firewalld' is already installed.
+No update candidate for 'firewalld-2.0.1-150600.3.12.1.noarch'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+success
+Warning: ZONE_ALREADY_SET: trusted
+success
+Warning: ALREADY_ENABLED: 6443:tcp
+success
+Warning: ALREADY_ENABLED: 2379-2380:tcp
+success
+Warning: ALREADY_ENABLED: 10250:tcp
+success
+Warning: ALREADY_ENABLED: 10257:tcp
+success
+Warning: ALREADY_ENABLED: 10259:tcp
+success
+Warning: ALREADY_ENABLED: 8472:udp
+success
+Warning: ALREADY_ENABLED: 8443:tcp
+success
+Warning: ALREADY_ENABLED: vrrp
+success
+Warning: ZONE_ALREADY_SET: trusted
+success
+  Порты control-plane + LB (8443/tcp) + VRRP открыты
+=== [6/10] AppArmor ===
+  containerd -> complain mode
+=== [7/10] Containerd + conntrack + ethtool ===
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'conntrack-tools' is already installed.
+No update candidate for 'conntrack-tools-1.4.5-1.46.x86_64'. The highest available version is already installed.
+'ethtool' is already installed.
+No update candidate for 'ethtool-6.4-150600.7.3.2.x86_64'. The highest available version is already installed.
+'containerd' is already installed.
+No update candidate for 'containerd-1.7.29-150000.130.1.x86_64'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+=== [8/10] kubeadm kubelet kubectl (v1.34) ===
+Repository 'Update repository of openSUSE Backports' is up to date.
+Repository 'Update repository with updates from SUSE Linux Enterprise 15' is up to date.
+Repository 'Main Update Repository' is up to date.
+Repository 'Update Repository (Non-Oss)' is up to date.
+Repository 'Kubernetes' is up to date.
+Repository 'Non-OSS Repository' is up to date.
+Repository 'Open H.264 Codec (openSUSE Leap)' is up to date.
+Repository 'Main Repository' is up to date.
+All repositories have been refreshed.
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'kubeadm' is already installed.
+No update candidate for 'kubeadm-1.34.11-150500.1.1.x86_64'. The highest available version is already installed.
+'kubectl' is already installed.
+No update candidate for 'kubectl-1.34.11-150500.1.1.x86_64'. The highest available version is already installed.
+'kubelet' is already installed.
+No update candidate for 'kubelet-1.34.11-150500.1.1.x86_64'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+=== [9/10] keepalived + haproxy (VIP 192.168.0.160:8443) ===
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'haproxy' is already installed.
+No update candidate for 'haproxy-2.8.11+git0.01c1056a4-150600.3.9.1.x86_64'. The highest available version is already installed.
+'keepalived' is already installed.
+No update candidate for 'keepalived-2.2.8-150600.3.5.1.x86_64'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+  Using interface: eth0
+  keepalived + haproxy настроены (state=BACKUP, priority=120)
+✓ k8s-master-2 готова!
+[0;32m[✓][0m k8s-master-2 подготовлена
+[0;34m[→][0m Подготовка k8s-master-3 (192.168.0.179), keepalived priority=90 state=BACKUP ...
+[1;33m[!][0m Ожидание освобождения zypper на 192.168.0.179...
+[0;32m[✓][0m zypper свободен
+=== [0/10] Отключение сетевого менеджмента cloud-init ===
+  cloud-init network management отключен — сеть теперь под ручным/netconfig контролем
+=== [1/10] Chrony ===
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'chrony' is already installed.
+No update candidate for 'chrony-4.1-150400.21.8.1.x86_64'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+=== [2/10] Swap ===
+=== [3/10] Модули ядра ===
+=== [4/10] sysctl ===
+=== [5/10] Firewall ===
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'firewalld' is already installed.
+No update candidate for 'firewalld-2.0.1-150600.3.12.1.noarch'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+success
+Warning: ZONE_ALREADY_SET: trusted
+success
+Warning: ALREADY_ENABLED: 6443:tcp
+success
+Warning: ALREADY_ENABLED: 2379-2380:tcp
+success
+Warning: ALREADY_ENABLED: 10250:tcp
+success
+Warning: ALREADY_ENABLED: 10257:tcp
+success
+Warning: ALREADY_ENABLED: 10259:tcp
+success
+Warning: ALREADY_ENABLED: 8472:udp
+success
+Warning: ALREADY_ENABLED: 8443:tcp
+success
+Warning: ALREADY_ENABLED: vrrp
+success
+Warning: ZONE_ALREADY_SET: trusted
+success
+  Порты control-plane + LB (8443/tcp) + VRRP открыты
+=== [6/10] AppArmor ===
+  containerd -> complain mode
+=== [7/10] Containerd + conntrack + ethtool ===
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'conntrack-tools' is already installed.
+No update candidate for 'conntrack-tools-1.4.5-1.46.x86_64'. The highest available version is already installed.
+'ethtool' is already installed.
+No update candidate for 'ethtool-6.4-150600.7.3.2.x86_64'. The highest available version is already installed.
+'containerd' is already installed.
+No update candidate for 'containerd-1.7.29-150000.130.1.x86_64'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+=== [8/10] kubeadm kubelet kubectl (v1.34) ===
+Repository 'Update repository of openSUSE Backports' is up to date.
+Repository 'Update repository with updates from SUSE Linux Enterprise 15' is up to date.
+Repository 'Main Update Repository' is up to date.
+Repository 'Update Repository (Non-Oss)' is up to date.
+Repository 'Kubernetes' is up to date.
+Repository 'Non-OSS Repository' is up to date.
+Repository 'Open H.264 Codec (openSUSE Leap)' is up to date.
+Repository 'Main Repository' is up to date.
+All repositories have been refreshed.
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'kubeadm' is already installed.
+No update candidate for 'kubeadm-1.34.11-150500.1.1.x86_64'. The highest available version is already installed.
+'kubectl' is already installed.
+No update candidate for 'kubectl-1.34.11-150500.1.1.x86_64'. The highest available version is already installed.
+'kubelet' is already installed.
+No update candidate for 'kubelet-1.34.11-150500.1.1.x86_64'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+=== [9/10] keepalived + haproxy (VIP 192.168.0.160:8443) ===
+Loading repository data...
+Warning: Repository 'Update repository of openSUSE Backports' metadata expired since 2026-07-10 11:19:15 UTC.
+
+    Warning: Repository metadata expired: Check if 'autorefresh' is turned on (zypper lr), otherwise
+    manually refresh the repository (zypper ref). If this does not solve the issue, it could be that
+    you are using a broken mirror or the server has actually discontinued to support the repository.
+
+Reading installed packages...
+'haproxy' is already installed.
+No update candidate for 'haproxy-2.8.11+git0.01c1056a4-150600.3.9.1.x86_64'. The highest available version is already installed.
+'keepalived' is already installed.
+No update candidate for 'keepalived-2.2.8-150600.3.5.1.x86_64'. The highest available version is already installed.
+Resolving package dependencies...
+Nothing to do.
+  Using interface: eth0
+  keepalived + haproxy настроены (state=BACKUP, priority=90)
+✓ k8s-master-3 готова!
+[0;32m[✓][0m k8s-master-3 подготовлена
+[0;34m[→][0m Проверка, что VIP поднялся (должен быть на первой ноде, k8s-master-1)...
+    inet 192.168.0.160/24 scope global secondary eth0
+[0;32m[✓][0m VIP 192.168.0.160 активен на k8s-master-1
+
+[0;34m══════════════════════════════════════[0m
+[0;34m  Часть 3: Инициализация первого control-plane узла (k8s-master-1)[0m
+[0;34m══════════════════════════════════════[0m
+[0;34m[→][0m kubeadm init (2-5 минут)...
+I0921 16:18:35.153004   14393 version.go:260] remote version is much newer: v1.37.0; falling back to: stable-1.34
+[init] Using Kubernetes version: v1.34.11
+[preflight] Running pre-flight checks
+	[WARNING Firewalld]: firewalld is active, please ensure ports [6443 10250] are open or your cluster may not function correctly
+[preflight] Some fatal errors occurred:
+	[ERROR Port-6443]: Port 6443 is in use
+	[ERROR Port-10259]: Port 10259 is in use
+	[ERROR Port-10257]: Port 10257 is in use
+	[ERROR FileAvailable--etc-kubernetes-manifests-kube-apiserver.yaml]: /etc/kubernetes/manifests/kube-apiserver.yaml already exists
+	[ERROR FileAvailable--etc-kubernetes-manifests-kube-controller-manager.yaml]: /etc/kubernetes/manifests/kube-controller-manager.yaml already exists
+	[ERROR FileAvailable--etc-kubernetes-manifests-kube-scheduler.yaml]: /etc/kubernetes/manifests/kube-scheduler.yaml already exists
+	[ERROR FileAvailable--etc-kubernetes-manifests-etcd.yaml]: /etc/kubernetes/manifests/etcd.yaml already exists
+	[ERROR Port-10250]: Port 10250 is in use
+	[ERROR Port-2379]: Port 2379 is in use
+	[ERROR Port-2380]: Port 2380 is in use
+	[ERROR DirAvailable--var-lib-etcd]: /var/lib/etcd is not empty
+[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`
+error: error execution phase preflight: preflight checks failed
+To see the stack trace of this error execute with --v=5 or higher
